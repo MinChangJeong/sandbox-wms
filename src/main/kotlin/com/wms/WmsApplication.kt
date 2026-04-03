@@ -1,11 +1,12 @@
-package com.example.sandboxwms
+package com.wms
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
+import org.springframework.context.annotation.ComponentScan
 
 @SpringBootApplication
-class SandboxWmsApplication
+class WmsApplication
 
 fun main(args: Array<String>) {
-    runApplication<SandboxWmsApplication>(*args)
+    runApplication<WmsApplication>(*args)
 }

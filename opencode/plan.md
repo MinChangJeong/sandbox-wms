@@ -2376,7 +2376,7 @@ class InventoryCommandController(
 
 ## 8. 개발 Phase 및 의존성
 
-### Phase 1: 기반 구축 (Week 1-3)
+### Phase 1: 기반 구축
 ```
 [시스템관리] → [기준정보] 
      ↓              ↓
@@ -2389,7 +2389,7 @@ class InventoryCommandController(
 - **MD-030~032**: 품목 관리
 - **MD-040~041**: 거래처 관리
 
-### Phase 2: 입고 프로세스 (Week 4-5)
+### Phase 2: 입고 프로세스
 ```
 [입고예정] → [검수] → [적치] → [재고생성] → [이력기록]
 ```
@@ -2397,7 +2397,7 @@ class InventoryCommandController(
 - **IB-010~012**: 입고검수
 - **IB-020~022**: 입고적치
 
-### Phase 3: 재고 관리 (Week 6-7)
+### Phase 3: 재고 관리
 ```
 [재고조회] ← [재고조정] ← [재고이동] ← [재고실사]
      ↓            ↓            ↓            ↓
@@ -2408,7 +2408,7 @@ class InventoryCommandController(
 - **IV-020~021**: 재고 이동
 - **IV-031~032**: 재고 실사
 
-### Phase 4: 출고 프로세스 (Week 8-10)
+### Phase 4: 출고 프로세스
 ```
 [출고예정] → [할당(락)] → [피킹] → [패킹] → [출고확정]
                 ↓            ↓                    ↓
@@ -2420,7 +2420,7 @@ class InventoryCommandController(
 - **OB-030~031**: 패킹
 - **OB-040,042**: 출고확정
 
-### Phase 5: 보고서 (Week 11)
+### Phase 5: 보고서
 - **RP-001~002**: 입출고 현황, 재고 리포트
 
 ---
