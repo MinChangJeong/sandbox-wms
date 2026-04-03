@@ -57,7 +57,6 @@ class InventoryRepositoryAdapter(
         return jpaRepository.searchWithCriteria(
             itemId = itemId,
             locationId = locationId,
-            warehouseId = warehouseId,
             status = status,
             pageable = pageable
         ).map { mapper.toDomain(it) }
