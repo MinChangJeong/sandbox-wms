@@ -17,7 +17,8 @@ import java.time.LocalDateTime
         Index(name = "idx_item_id", columnList = "item_id"),
         Index(name = "idx_location_id", columnList = "location_id"),
         Index(name = "idx_status", columnList = "status"),
-        Index(name = "idx_available_qty", columnList = "available_qty")
+        Index(name = "idx_allocated_qty", columnList = "allocated_qty"),
+        Index(name = "idx_quantity", columnList = "quantity")
     ]
 )
 class Inventory private constructor(
