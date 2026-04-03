@@ -155,3 +155,109 @@ sealed class StorageType(
         fun all(): List<StorageType> = listOf(Normal, Cold, Frozen, Hazardous)
     }
 }
+
+sealed class InventoryStatus(
+    val code: String,
+    val displayName: String
+) {
+    abstract fun allowedTransitions(): Set<kotlin.reflect.KClass<out InventoryStatus>>
+    abstract fun canAllocate(): Boolean
+    abstract fun canPick(): Boolean
+    abstract fun canAdjust(): Boolean
+    
+    fun canTransitionTo(target: InventoryStatus): Boolean =
+        target::class in allowedTransitions()
+    
+    data object Available : InventoryStatus("AVAILABLE", "가용") {
+        override fun allowedTransitions() = setOf(
+            Allocated::class,
+            OnHold::class,
+            Damaged::class
+        )
+        override fun canAllocate() = true
+        override fun canPick() = false
+        override fun canAdjust() = true
+    }
+    
+    data object Allocated : InventoryStatus("ALLOCATED", "할당됨") {
+        override fun allowedTransitions() = setOf(
+            Available::class,
+            Picked::class
+        )
+        override fun canAllocate() = false
+        override fun canPick() = true
+        override fun canAdjust() = false
+    }
+    
+    data object FullyAllocated : InventoryStatus("FULLY_ALLOCATED", "전량할당") {
+        override fun allowedTransitions() = setOf(
+            Allocated::class,
+            Available::class
+        )
+        override fun canAllocate() = false
+        override fun canPick() = true
+        override fun canAdjust() = false
+    }
+    
+    data object Picked : InventoryStatus("PICKED", "피킹완료") {
+        override fun allowedTransitions() = setOf(
+            Shipped::class
+        )
+        override fun canAllocate() = false
+        override fun canPick() = false
+        override fun canAdjust() = false
+    }
+    
+    data object Shipped : InventoryStatus("SHIPPED", "출고완료") {
+        override fun allowedTransitions() = emptySet<kotlin.reflect.KClass<out InventoryStatus>>()
+        override fun canAllocate() = false
+        override fun canPick() = false
+        override fun canAdjust() = false
+    }
+    
+    data object OnHold : InventoryStatus("ON_HOLD", "보류") {
+        override fun allowedTransitions() = setOf(
+            Available::class,
+            Damaged::class
+        )
+        override fun canAllocate() = false
+        override fun canPick() = false
+        override fun canAdjust() = true
+    }
+    
+    data object Damaged : InventoryStatus("DAMAGED", "불량") {
+        override fun allowedTransitions() = setOf(
+            Available::class,
+            Disposed::class
+        )
+        override fun canAllocate() = false
+        override fun canPick() = false
+        override fun canAdjust() = true
+    }
+    
+    data object Disposed : InventoryStatus("DISPOSED", "폐기") {
+        override fun allowedTransitions() = emptySet<kotlin.reflect.KClass<out InventoryStatus>>()
+        override fun canAllocate() = false
+        override fun canPick() = false
+        override fun canAdjust() = false
+    }
+    
+    companion object {
+        fun fromCode(code: String): InventoryStatus = when (code) {
+            "AVAILABLE" -> Available
+            "ALLOCATED" -> Allocated
+            "FULLY_ALLOCATED" -> FullyAllocated
+            "PICKED" -> Picked
+            "SHIPPED" -> Shipped
+            "ON_HOLD" -> OnHold
+            "DAMAGED" -> Damaged
+            "DISPOSED" -> Disposed
+            else -> throw IllegalArgumentException("Unknown InventoryStatus: $code")
+        }
+        
+        fun all(): List<InventoryStatus> = listOf(
+            Available, Allocated, FullyAllocated, Picked,
+            Shipped, OnHold, Damaged, Disposed
+        )
+    }
+}

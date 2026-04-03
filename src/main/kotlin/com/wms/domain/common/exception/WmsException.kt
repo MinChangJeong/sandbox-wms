@@ -5,7 +5,13 @@ sealed class WmsException(
     override val message: String,
     val details: Map<String, Any> = emptyMap(),
     cause: Throwable? = null
-) : RuntimeException(message, cause)
+) : RuntimeException(message, cause) {
+    companion object {
+        fun InventoryNotFound(inventoryId: Long): InventoryException.NotFound {
+            return InventoryException.NotFound(inventoryId)
+        }
+    }
+}
 
 sealed class WarehouseException(
     errorCode: String,
@@ -122,6 +128,45 @@ sealed class ItemException(
         "ITEM_004",
         "재고가 있는 품목의 보관 타입을 변경할 수 없습니다",
         mapOf("itemId" to itemId)
+    )
+}
+
+sealed class InventoryException(
+    errorCode: String,
+    message: String,
+    details: Map<String, Any> = emptyMap()
+) : WmsException(errorCode, message, details) {
+    
+    class NotFound(inventoryId: Long) : InventoryException(
+        "INV_001",
+        "재고를 찾을 수 없습니다",
+        mapOf("inventoryId" to inventoryId)
+    )
+    
+    class InsufficientQuantity(
+        inventoryId: Long,
+        requested: Int,
+        available: Int
+    ) : InventoryException(
+        "INV_002",
+        "가용 재고가 부족합니다",
+        mapOf("inventoryId" to inventoryId, "requested" to requested, "available" to available)
+    )
+    
+    class InvalidStatusTransition(
+        inventoryId: Long,
+        from: String,
+        to: String
+    ) : InventoryException(
+        "INV_003",
+        "유효하지 않은 상태 전이입니다",
+        mapOf("inventoryId" to inventoryId, "from" to from, "to" to to)
+    )
+    
+    class AlreadyAllocated(inventoryId: Long) : InventoryException(
+        "INV_004",
+        "이미 할당된 재고입니다",
+        mapOf("inventoryId" to inventoryId)
     )
 }
 
