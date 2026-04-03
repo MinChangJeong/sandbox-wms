@@ -23,7 +23,7 @@ interface InventoryJpaRepository : JpaRepository<Inventory, Long> {
     @Query("""
         SELECT i FROM Inventory i 
         WHERE i.itemId = :itemId 
-        AND i.availableQty > 0
+        AND (i.quantity - i.allocatedQty) > 0
         AND i.isDeleted = false
         ORDER BY i.createdAt ASC
     """)
