@@ -42,7 +42,7 @@ class InboundOrderEntity(
     
     @OneToMany(
         mappedBy = "inboundOrder",
-        fetch = FetchType.LAZY
+        fetch = FetchType.EAGER
     )
     val items: List<InboundOrderItemEntity> = emptyList(),
     
