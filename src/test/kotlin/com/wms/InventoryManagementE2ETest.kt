@@ -3,6 +3,7 @@ package com.wms
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.wms.domain.inventory.model.Inventory
 import com.wms.domain.inventory.repository.InventoryRepository
+import com.wms.domain.inventory.repository.InventoryHistoryRepository
 import com.wms.infrastructure.web.inventory.dto.AdjustInventoryRequest
 import com.wms.infrastructure.web.inventory.dto.CreateMovementRequest
 import org.junit.jupiter.api.BeforeEach
@@ -20,6 +21,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 class InventoryManagementE2ETest(
     @Autowired private val mockMvc: MockMvc,
     @Autowired private val inventoryRepository: InventoryRepository,
+    @Autowired private val historyRepository: InventoryHistoryRepository,
     @Autowired private val objectMapper: ObjectMapper
 ) {
     
@@ -149,8 +151,30 @@ class InventoryManagementE2ETest(
         
         val inventory = inventoryRepository.findById(inventoryId)!!
         val histories = inventory.getHistories()
-        assert(histories.isNotEmpty()) { "History should be recorded" }
+        assert(histories.isNotEmpty()) { "History should be recorded in memory" }
         assert(histories[0].transactionType == "ADJUSTMENT_INCREASE")
         assert(histories[0].changeQuantity == 50)
+    }
+    
+    @Test
+    fun verifyInventoryHistoryPersistedToDatabase() {
+        val adjustment = AdjustInventoryRequest(
+            inventoryId = inventoryId,
+            adjustmentType = "INCREASE",
+            quantity = 75,
+            reason = "데이터베이스 검증"
+        )
+        
+        mockMvc.perform(
+            post("/api/v1/inventory/commands/adjustments")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(adjustment))
+        )
+            .andExpect(status().isCreated)
+        
+        val persistedHistories = historyRepository.findByInventoryId(inventoryId)
+        assert(persistedHistories.isNotEmpty()) { "History must be persisted to database" }
+        assert(persistedHistories[0].transactionType == "ADJUSTMENT_INCREASE")
+        assert(persistedHistories[0].changeQuantity == 75)
     }
 }

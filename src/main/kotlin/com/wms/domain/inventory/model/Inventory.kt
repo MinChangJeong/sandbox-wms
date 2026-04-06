@@ -356,7 +356,7 @@ class Inventory private constructor(
     /**
      * 이력 기록 (내부 사용)
      */
-    private fun recordHistory(
+    internal fun recordHistory(
         transactionType: String,
         changeQuantity: Int,
         beforeQuantity: Int,
